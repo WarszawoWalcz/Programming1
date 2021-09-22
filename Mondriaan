@@ -1,0 +1,74 @@
+package nl.ru.ai.p4ai.exercise2;
+
+import static nl.ru.ai.karel.Karel.*;
+
+public class Mondriaan
+{
+  public static void main(String[] args)
+  {
+    speed(5);
+    step(); //Initial position
+    timesToRun(500);
+  }
+
+  private static void timesToRun(int num) {
+    while(num>0){
+      makeMondriaan(random(0,29),random(0,14));
+      num--;
+    }
+
+  }
+
+  private static void makeMondriaan( int randPosition_X,int randPosition_Y) {
+    randomLocation(randPosition_X,randPosition_Y);
+    drawRectangle(random(1,30-randPosition_X), random(1,1+randPosition_Y));
+    resetToOrigin(randPosition_X, randPosition_Y);
+    }
+
+    private static void resetToOrigin(int randPosition_X, int randPosition_Y) {
+    turnRight();
+    turnRight();
+    walk(randPosition_Y);
+    turnRight();
+    walk(randPosition_X);
+    turnRight();
+  }
+
+  private static void randomLocation(int randPosition_X, int randPosition_Y) {
+    turnRight();
+    walk(randPosition_X);
+    turnLeft();
+    walk(randPosition_Y);
+    turnRight();
+  }
+
+  private static void walk(int numOfSteps) {
+    while (numOfSteps>0){
+      step();
+      numOfSteps--;
+    }
+  }
+
+  private static void drawRectangle(int lineLength_X, int lineLength_Y) {
+    drawLine(lineLength_X);
+    turnRight();
+    drawLine(lineLength_Y);
+    turnRight();
+    drawLine(lineLength_X);
+    turnRight();
+    drawLine(lineLength_Y);
+
+  }
+
+  private static void drawLine(int length) {
+    while(length>0){
+      if (!onBall()){
+        putBall();
+      }
+      else{
+        step();
+        length--;
+      }
+    }
+  }
+}
