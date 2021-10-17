@@ -1,0 +1,152 @@
+//Dawid Dudek s1074780 and Omar Qaterge s1056565
+package nl.ru.ai.easter;
+
+public class  Easter {
+
+  static boolean isLeapYear(int year) {
+    if (year % 100 == 0) {
+      if (year % 400 == 0) {
+        return true;
+      }
+    } else {
+      if (year % 4 == 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  static int numberOfDaysInMonth(int year, Month month) {
+    if(month == Month.FEBRUARY){
+      if(isLeapYear(year)){
+        return 29;
+      }else{
+        return 28;
+      }
+    }
+    switch(month){
+      case APRIL:
+      case JUNE:
+      case SEPTEMBER:
+      case NOVEMBER:
+        return 30;
+      default:
+        return 31;
+    }
+  }
+
+  static Month easterMonth(int year) {
+    int a = year % 19;
+    int b = year / 100;
+    int c = year % 100;
+    int d = b / 4;
+    int e = b % 4;
+    int f = (b + 8) / 25;
+    int g = (b - f + 1) / 3;
+    int h = (19 * a + b - d - g + 15) % 30;
+    int i = c / 4;
+    int k = c % 4;
+    int L = (32 + 2 * e + 2 * i - h - k) % 7;
+    int m = (a + 11 * h + 22 * L) / 451;
+    int month = ( h + L - 7 * m + 114) / 31;
+
+    return Month.month(month);
+  }
+
+  static int easterDay(int year) {
+    int a = year % 19;
+    int b = year / 100;
+    int c = year % 100;
+    int d = b / 4;
+    int e = b % 4;
+    int f = (b + 8) / 25;
+    int g = (b - f + 1) / 3;
+    int h = (19 * a + b - d - g + 15) % 30;
+    int i = c / 4;
+    int k = c % 4;
+    int L = (32 + 2 * e + 2 * i - h - k) % 7;
+    int m = (a + 11 * h + 22 * L) / 451;
+    int day = ((h + L - 7 * m + 114) % 31) + 1;
+
+    return day;
+  }
+
+  static int dayNumberInYear(int day, Month month, int year) {
+    int NumOfdays = 0;
+    for (int i = 1; i < month.number() ; i++) {
+      NumOfdays += numberOfDaysInMonth(year,Month.month(i));
+    }
+    return NumOfdays + day;
+  }
+
+  static Month monthInYearOfDayNumber(int dayNumber, int year) {
+    if (dayNumber <= 31) { return Month.JANUARY; }
+    int i;
+    for (i = 1; i <= 12; i++) {
+      if (dayNumber == numberOfDaysInMonth(year, Month.month(i))) {
+        return Month.month(i);
+      } else {
+        dayNumber = dayNumber - numberOfDaysInMonth(year, Month.month(i));
+        if (dayNumber <= numberOfDaysInMonth(year, Month.month(i + 1))) {
+          return Month.month(i + 1);
+        }
+      }
+    }
+    return Month.JANUARY;
+  }
+
+  static int dayInMonthOfDayNumber(int dayNumber, int year) {
+    int i;
+    for (i = 1; i <= 12; i++) {
+      if (dayNumber <= numberOfDaysInMonth(year, Month.month(i))) {
+        return dayNumber;
+      }
+      dayNumber -= numberOfDaysInMonth(year, Month.month(i));
+      }
+    return 0;
+  }
+
+  static void showHolyDays(int year) {
+    //Easter:
+    int e = dayNumberInYear(easterDay(year),easterMonth(year),year);
+    System.out.println("Easter:");
+    System.out.println(dayInMonthOfDayNumber(e, year));
+    System.out.println(monthInYearOfDayNumber(e, year));
+    //carnival:
+    int c = dayNumberInYear(easterDay(year),easterMonth(year),year) - 49;
+    System.out.println("Carnival:");
+    System.out.println(dayInMonthOfDayNumber(c, year));
+    System.out.println(monthInYearOfDayNumber(c, year));
+    //Good friday:
+    int f = dayNumberInYear(easterDay(year),easterMonth(year),year) - 2;
+    System.out.println("Good Friday:");
+    System.out.println(dayInMonthOfDayNumber(f, year));
+    System.out.println(monthInYearOfDayNumber(f, year));
+    //AscensionDay:
+    System.out.println("AscensionDay:");
+    int a = dayNumberInYear(easterDay(year),easterMonth(year),year) + 39;
+    System.out.println(dayInMonthOfDayNumber(a, year));
+    System.out.println(monthInYearOfDayNumber(a, year));
+    //Whitsuntide:
+    System.out.println("Whitsuntide:");
+    int w = dayNumberInYear(easterDay(year),easterMonth(year),year) + 49;
+      System.out.println(dayInMonthOfDayNumber(w, year));
+      System.out.println(monthInYearOfDayNumber(w, year));
+  }
+  public static void main(String[] arguments) {
+    //og version of the code.
+    showHolyDays(2018);
+
+    //it is for testing whole lotta years.
+//    for (int i = 2020; i >= 2000; i--) {
+//      System.out.println("-------------------------" + i);
+//      showHolyDays(i);
+//    }
+    //it shows the whole calendar of given year testing if monthInYearOfDayNumber and dayInMonthOfDayNumber works
+//    for (int j = 1; j <=366;j++) {
+//      System.out.println(dayInMonthOfDayNumber(j,2020));
+//      System.out.println(monthInYearOfDayNumber(j,2020));
+//    }
+  }
+}
+
