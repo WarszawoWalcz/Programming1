@@ -1,0 +1,111 @@
+package nl.ru.ai.exercise0;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.util.Scanner;
+
+public class Exercise0 {
+  /**
+   * Program main entry point
+   * @param args arguments to the program (ignored)
+   */
+  private static final int MAX_NR_OF_TRACKS = 5000;
+
+  public static void main(String[] args) {
+    Track[] database = new Track[MAX_NR_OF_TRACKS];
+    int nr = readDatabase(database);
+    System.out.println(nr + " tracks read");
+
+  }
+
+  private static void readFile(String fileName) throws FileNotFoundException {
+    BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
+    String line;
+
+
+  }
+
+  /**
+   * Calculate the sum of the specified length arguments
+   *
+   * @param a
+   * @param b
+   * @return sum
+   */
+  static Length add(Length a, Length b) {
+    int min_sum = 0;
+    int sec_sum = 0;
+
+    min_sum = a.minutes + b.minutes;
+    sec_sum = a.seconds + b.seconds;
+
+    if (sec_sum > 59) {
+      min_sum++;
+      sec_sum = sec_sum - 60;
+    }
+
+    Length x = new Length();
+    x.minutes = min_sum;
+    x.seconds = sec_sum;
+    return x;
+  }
+
+  /**
+   * Converts the given string in the format m..m:ss to a Length object
+   *
+   * @param string
+   * @return corresponding length object
+   */
+  static Length fromString(String string) {
+    int a = Integer.parseInt(string.split(":")[0]);
+    int b = Integer.parseInt(string.split(":")[1]);
+
+    Length x = new Length();
+    x.minutes = a;
+    x.seconds = b;
+
+    return x;
+  }
+
+  /**
+   * Converts a given length object into a string in the format m..m:ss
+   *
+   * @param length
+   * @return string representation
+   */
+  static String toString(Length length) {
+    return length.minutes + ":" + length.seconds;
+  }
+
+  /**
+   * Reads the cd database from the file 'Nummers.txt' into the specified track array
+   *
+   * @param database
+   * @return number of tracks read
+   */
+  static int readDatabase(Track[] database) {
+    int counter = 0;
+    try {
+      Scanner scanner = new Scanner(new FileInputStream("songs.txt"));
+      while (scanner.hasNext()) {
+        database[counter] = new Track();
+        database[counter].artist = scanner.nextLine();
+        database[counter].cd = scanner.nextLine();
+        database[counter].year = scanner.nextInt();
+        scanner.nextLine();
+        database[counter].track = scanner.nextInt();
+        scanner.nextLine();
+        database[counter].title = scanner.nextLine();
+        database[counter].tags = scanner.nextLine();
+        database[counter].time = fromString(scanner.nextLine());
+        database[counter].country = scanner.nextLine();
+        counter++;
+      }
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+    return counter;
+  }
+}
