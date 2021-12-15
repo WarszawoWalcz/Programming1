@@ -1,0 +1,23 @@
+S1074780 DAWID DUDEK
+
+package YOURPACKAGE;
+
+public class YOURNAME {
+
+    public static void main(String[] args) {
+        for (int n = 0; n < 1000; n++) {
+        System.out.println("Fib(" + n + "): " + fib(n));
+            }
+    }
+
+    public static int fib(int n) {
+        if (n <= 1)
+            return 1;
+        return sum(fib(n - 2),fib(n - 1));
+    }
+
+    private static int sum(int fib2,int fib1) {
+        int fib = fib2 + fib1;
+        return fib;
+    }
+}
