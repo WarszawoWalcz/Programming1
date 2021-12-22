@@ -1,0 +1,67 @@
+package nl.ru.ai.exercise5;
+
+import static nl.ru.ai.exercise5.Maze.*;
+
+import java.util.ArrayList;
+
+public class Exercise5
+{
+  public static void main(String[] arguments)
+  {
+    ArrayList<Candidate> candidates=new ArrayList<Candidate>();
+    candidates.add(new Candidate(new Attempt(1,7),-1));
+    boolean found=false;
+    int c=0;
+    while(c<candidates.size() && !found) {
+      int row = candidates.get(c).attempt.row;
+      int col = candidates.get(c).attempt.col;
+      if (hasRabbit(row, col)) {
+        showPath(candidates, c);
+        found = true;
+      }
+      else {
+        if (!hasWall(row-1,col) && !hasVisited(row-1,col)) {
+          other(c, row-1, col, candidates);
+        }
+        if (!hasWall(row,col-1) && !hasVisited(row,col-1)) {
+          Candidate candidate2 = new Candidate(new Attempt(row,col-1),c);
+          candidates.add(candidate2);
+          visited(row,col-1);
+        }
+        if (!hasWall(row+1,col) && !hasVisited(row+1,col)) {
+          Candidate candidate3 = new Candidate(new Attempt(row+1,col),c);
+          candidates.add(candidate3);
+          visited(row+1,col);
+        }
+        if (!hasWall(row,col+1) && !hasVisited(row,col+1)) {
+          Candidate candidate4 = new Candidate(new Attempt(row,col+1),c);
+          candidates.add(candidate4);
+          visited(row,col+1);
+        }
+        c++;
+      }
+    }
+  }
+
+  private static void other(int c, int row, int col, ArrayList<Candidate> candidates) {
+    assert candidates != null;
+//    assert row > 0 i gotta do asserts etc.
+    Candidate candidate1 = new Candidate(new Attempt(row, col), c);
+    candidates.add(candidate1);
+    visited(row, col);
+  }
+
+  /**
+   * This function shows a path of candtidate.
+   * @param candidates
+   * @param c
+   */
+
+  private static void showPath(ArrayList<Candidate> candidates, int c) {
+    assert candidates != null;
+    if (c>=0) {
+      showPath(candidates, candidates.get(c).parentCandidate);
+      System.out.println(candidates.get(c).attempt.row + "," + candidates.get(c).attempt.col);
+    }
+  }
+}
