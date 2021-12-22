@@ -1,0 +1,224 @@
+//Dawid Dudek s1074780
+//Omar Qaterge s1056565
+
+package nl.ru.ai.exercise4;
+
+import java.util.ArrayList;
+
+public class Exercise4New
+{
+    static int nrOfFails = 0;
+    static int nrOfPrunes = 0;
+
+    public static void main(String[] args) {
+        // Exercise 1
+        System.out.println();
+        System.out.println("Exercise 1");
+        int[] money0 = {};
+        int target0 = 0;
+        output(money0, target0, 0);
+
+        int[] money1 = {2, 2, 2, 5, 10, 10, 20};
+        int target1 = 1;
+        output(money1, target1, 1);
+
+        int[] money2 = {20, 10, 10, 5, 2, 2, 2};
+        int target2 = 42;
+        output(money2, target2, 2);
+
+        int[] money3 = {20, 50, 1000, 1000, 2000};
+        int target3 = 2021;
+        output(money3, target3, 3);
+
+        /*
+        Improved program doesn't have to run all the time even in the worst cases so NR of fails goes down a lot.
+        Before the 'update' it used to check literally every case during operation even if the set of coins was useless to reach target.
+        Now, this version is able to prune the case in two situations given in the PDF file:
+
+        1) When the min value in the array is bigger than target.
+        2) When sum of the rest of array is smaller than target.
+         */
+
+        // Exercise 2
+        int[] All = {15, 24, 32, 40, 60, 72, 80, 90};
+        int maxWeight = 250;
+        int maxPeople = 6;
+        ArrayList<Integer> weights = new ArrayList<>();
+        ArrayList<Integer> solWeights = new ArrayList<>();
+
+        lift(All, 0, maxWeight, maxPeople, weights, solWeights);
+        System.out.println();
+        System.out.println("Exercise 2");
+        System.out.println();
+        System.out.println("The max weights that lift can carry is " + (maxWeight - calculateWeight(solWeights)));
+        System.out.println("Solution weights:");
+
+        for (Integer weight : solWeights) System.out.print(weight + ", "); //Loop for printing the set of solution weights.
+    }
+    /**
+     * Calculates the max amount of people that a lift can carry
+     * @param solPeople the array with people's weight
+     * @param c index of checking
+     * @param weight the MAX weight that the lift can carry yet
+     * @param people the MAX people that the lift can carry yet
+     * @param solution the list of CURRENT combinations that are being checked
+     * @param bestSolution the list of CURRENT best combinations
+     */
+    static void lift(int[] solPeople, int c, int weight, int people, ArrayList<Integer> solution, ArrayList<Integer> bestSolution){
+        assert solPeople != null && solPeople.length > 0;
+        assert solution != null;
+        assert bestSolution != null;
+
+        if(weight <= 0 || people <= 0){
+            return;
+        }
+        if(c == solPeople.length){
+            checkBestSolution(weight, solution, bestSolution);
+            return;
+        }
+
+        solution.add(solPeople[c]);
+        lift(solPeople,c+1,weight-solPeople[c], people-1, solution, bestSolution);
+
+        solution.remove(solution.size() -1);
+        checkBestSolution(weight, solution, bestSolution);
+
+        lift(solPeople,c+1,weight, people, solution, bestSolution);
+        checkBestSolution(weight, solution, bestSolution);
+    }
+
+    /**
+     * Compares current solution to the best solution and if needed it replaces them
+     * @param weight the remaining weight of the current solution
+     * @param solution parameter for the current solution
+     * @param bestSolution parameter for the best solution
+     */
+    static void checkBestSolution(int weight, ArrayList<Integer> solution, ArrayList<Integer> bestSolution){
+        assert solution != null && solution.size() > 0;
+        assert bestSolution != null;
+
+        if(bestSolution.size() == 0 || weight < calculateWeight(bestSolution)) {
+            bestSolution.clear();
+            bestSolution.addAll(solution);
+        }
+    }
+
+    /**
+     * Calculates the remaining weight of sum = 250kgs
+     * @param randomList
+     * @return The remaining weight
+     */
+    static int calculateWeight(ArrayList<Integer> randomList){
+        assert randomList != null && randomList.size() > 0;
+
+        int sum = 250;
+        int lis = randomList.size();
+        for(int i = 0; i < lis; i++){
+            sum -= randomList.get(i);
+        }
+        return sum;
+    }
+
+    /**
+     * Shows the output - NR of solutions, fails, prunes in the console
+     * @param money the array with set of coins
+     * @param target the target to calculate
+     */
+    static void output(int[] money, int target, int NrCase){
+        assert money != null && money.length > 0;
+        assert target >= 0;
+
+        ArrayList<Integer> solution = new ArrayList<>();
+        int sum = 0;
+
+        for (int j : money) {
+            sum += j;
+        }
+        System.out.println();
+        System.out.println("NR of solutions for case: " + NrCase +" is " + solutions(money, 0, target, solution, sum));
+        System.out.println("NR of fails is: "+nrOfFails);
+        System.out.println("NR of prunes is : "+nrOfPrunes);
+        System.out.println();
+        nrOfFails = 0;
+        nrOfPrunes = 0;
+    }
+
+    /**
+     * Displays specifically solutions (not NR!) for every set of coins
+     *
+     * @param s - array with solutions
+     */
+    private static void showSolutions(ArrayList<Integer> s) {
+        assert s != null && s.size() > 0;
+        for (int i : s) {  //TA showed me that you can write for loop like this, it is really helpful
+            System.out.print(i + ", ");
+        }
+        System.out.println();
+    }
+
+    /**
+     * Finds the minimum value in the array
+     * @param money the array to check
+     * @param lim the limits for the search
+     * @return the min value as int
+     */
+    static int min(int[] money, int lim){
+        assert money != null && money.length > 0;
+        assert lim >= 0 && lim < money.length;
+
+        int smallestIndex = lim;
+
+        for(int i = lim; i < money.length; i++){
+            if(money[i] < money[smallestIndex])
+                smallestIndex = i;
+        }
+
+        return money[smallestIndex];
+    }
+
+    /**
+     * Returns the number of ways of creating specified target value as a sum of money starting with c
+     * @param money the array to check
+     * @param c the index to check
+     * @param target the target value
+     * @param s a list of coins that form a solution
+     * @param sum the sum of the coins in the array
+     * @return number of ways
+     */
+    private static int solutions(int[] money, int c, int target, ArrayList<Integer> s, int sum)
+    {
+        assert money!=null : "array should be initialized";
+        assert c>=0&&c<=money.length;
+        assert s != null;
+
+        if(target==0) {
+            showSolutions(s);
+            return 1;
+        }
+        if(c>=money.length) {
+            nrOfFails++;
+            return 0;
+        }
+        if(target<0) {
+            nrOfFails++;
+            return 0;
+        }
+        if(sum < target){
+            nrOfPrunes++;
+            return 0;
+        }
+        if(min(money, c) > target){
+            nrOfPrunes++;
+            return 0;
+        }
+
+        sum-= money[c];
+        s.add(money[c]);
+        int with=solutions(money,c+1,target-money[c], s, sum);
+        if(s.size() > 0)
+            s.remove(s.size() -1);
+        int without=solutions(money,c+1,target, s, sum);
+        return with+without;
+    }
+
+}
